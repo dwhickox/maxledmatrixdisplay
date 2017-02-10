@@ -33,9 +33,9 @@ void loop() {
   
   matrix.fillScreen(LOW);//Empty the screen
   matrix.setCursor(curs,0);//Move the cursor to the end of the screen
-  curs ++;
-  if (curs == 31) {
-    curs = -letter.length()*5;
+  curs --;
+  if (curs == -letter.length()*5) {
+    curs = 31;
   }
     
   matrix.print(letter);
