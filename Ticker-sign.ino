@@ -1,3 +1,4 @@
+
 #include <Adafruit_GFX.h>
 #include <Max72xxPanel.h>
 
@@ -35,7 +36,7 @@ void loop() {
   matrix.setCursor(curs,0);//Move the cursor to the end of the screen
   curs ++;
   if (curs == 31) {
-    curs = 0
+    curs = -31
   }
     
   matrix.print(letter);
