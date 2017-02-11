@@ -1,11 +1,28 @@
+/*copyright David Hickox
+ * Requirements to run, adafruit gfx and Max72xxPanel by markruys https://github.com/markruys/arduino-Max72xxPanel
+ * 
+ * 
+ * variables for you to mess with:
+ * pinCS, set this to what digital pin you want to connect CS (on the matrix input) to
+ * numHorizDisp, set how many 8*8 max matricies you have horizontaly
+ * numVertDisp, set how many 8*8 max matricies you have verticaly
+ * ampm, change this from 0 to 1 if you want 12 hour time instead of 24
+ * txtsz, this is the text size, mess with this if you have more pannels or are just curious
+ * rot, (0-3) rotates your display oreintation depending on how you have it set up, the default and most common is 1
+ * 
+ */
+
+
 #include <Adafruit_GFX.h>
 #include <Max72xxPanel.h>
 
 
 int pinCS = 10; // Attach CS to this pin, DIN to MOSI and CLK to SCK (cf http://arduino.cc/en/Reference/SPI )
-int numberOfHorizontalDisplays = 4;//adjust this to your setup
-int numberOfVerticalDisplays = 1;
+int numHorizDisp = 4;//adjust this to your setup
+int numVertDisp = 1;
 int ampm = 0; // if you want it to run 24 hour set to 0 if you want 12 hour set to 1
+int txtsz = 1;
+int rot = 1;
 int h;
 int h1;
 int m;
@@ -14,24 +31,24 @@ int s;
 int s1;
 int curs = 0;
 String msg;
-Max72xxPanel matrix = Max72xxPanel(pinCS, numberOfHorizontalDisplays, numberOfVerticalDisplays);
+Max72xxPanel matrix = Max72xxPanel(pinCS, numHorizDisp, numVertDisp);
 
 void setup() {
   Serial.begin(57600);
   matrix.setIntensity(4); // Set brightness between 0 and 15
 
-  matrix.setRotation(0, 1);//you may have to change this section depending on your LED matrix setup
-  matrix.setRotation(1,1);
-  matrix.setRotation(2,1);
-  matrix.setRotation(3,1);
-  matrix.setTextSize(1);
+  matrix.setRotation(0,rot);//you may have to change this section depending on your LED matrix setup
+  matrix.setRotation(1,rot);
+  matrix.setRotation(2,rot);
+  matrix.setRotation(3,rot);
+  matrix.setTextSize(txtsz);
   matrix.setTextWrap(false); 
   matrix.setTextColor(HIGH);
   Serial.println("made it through setup");
 }
 
 void loop() {
-  if (Serial.available() > 5)
+  if (Serial.available() > 5) // set the clock with ab hours cd min and ef seconds in the format "a,b,c,d,e,f" in the serial console
   {
       Serial.println("serial was deamed avialable");
       h = Serial.parseInt();
