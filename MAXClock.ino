@@ -11,6 +11,8 @@
    txtsz, this is the text size, mess with this if you have more pannels or are just curious
    rot, (0-3) rotates your display oreintation depending on how you have it set up, the default and most common is 1
    interval, i guess if you wanted to use this as a metrinome or something you could change the lenght of the second with this
+   marquee, if you wish to have the text scroll like a movie theater marquee, set this to 1 if not set it to 0 (an added benifit of this is that it will display the seconds as well
+   interval1, change how fast the marquee scrolls, the larger the number the slower (millis delay)
 */
 
 
@@ -24,6 +26,7 @@ int numVertDisp = 1;
 int ampm = 0; // if you want it to run 24 hour set to 0 if you want 12 hour set to 1
 int txtsz = 1;
 int rot = 1;
+int marquee = 1;//1 marquee enabled, 0 disabled
 int h;
 int h1;
 int m;
@@ -32,16 +35,19 @@ int s;
 int s1;
 int curs = 0;
 int interval = 1000;
+int interval1 = 80;
 int debug;
 int i;
 String msg;
+String sermsg;
 unsigned long prevMil = 0;
+unsigned long prevMil1 = 0;
 
 Max72xxPanel matrix = Max72xxPanel(pinCS, numHorizDisp, numVertDisp);
 
 void setup() {
   Serial.begin(57600);
-  matrix.setIntensity(4); // Set brightness between 0 and 15
+  matrix.setIntensity(3); // Set brightness between 0 and 15
 
   matrix.setRotation(0, rot); //you may have to change this section depending on your LED matrix setup
   matrix.setRotation(1, rot);
@@ -55,11 +61,12 @@ void setup() {
 
 void loop() {
   unsigned long curMil = millis();
+  unsigned long curMil1 = millis();
   if ((unsigned long)(curMil - prevMil) >= interval) {
-    if ((unsigned long)(curMil - prevMil) > interval){
+    if ((unsigned long)(curMil - prevMil) > interval) {
       debug = debug + ((curMil - prevMil) - interval);
       i++;
-      if (i == 10){
+      if (i == 10) {
         Serial.println(debug);
         i = 0;
       }
@@ -80,23 +87,24 @@ void loop() {
       s1 = Serial.parseInt();
       Serial.println(s1);
     }
-
-    matrix.fillScreen(LOW);//Empty the screen
-    matrix.setCursor(curs, 0); //Move the cursor to the end of the screen
     msg = "";
     msg.concat(h);
     msg.concat(h1);
     msg.concat(":");
     msg.concat(m);
     msg.concat(m1);
-    matrix.print(msg);
-    msg.concat(":");
-    msg.concat(s);
-    msg.concat(s1);
-    Serial.println(msg);
-    matrix.write();
+    sermsg = msg;
+    sermsg.concat(":");
+    sermsg.concat(s);
+    sermsg.concat(s1);
+    Serial.println(sermsg);
+    if (marquee == 1) {
+      msg.concat(":");
+      msg.concat(s);
+      msg.concat(s1);
+    }
     s1++;
-    if (s1 >= 10) {
+  if (s1 >= 10) {
       s1 = 0;
       s++;
       Serial.println("seconds reset");
@@ -137,4 +145,18 @@ void loop() {
     }
     prevMil = curMil;
   }
+
+  if (marquee == 1) {
+    if ((unsigned long)(curMil1 - prevMil1) >= interval1) {
+      curs --;
+      if (curs == -msg.length() * 6) {
+        curs = 34;
+      }
+      prevMil1 = curMil1;
+    }
+  }
+  matrix.fillScreen(LOW);//Empty the screen
+  matrix.setCursor(curs, 0); //Move the cursor to the end of the screen
+  matrix.print(msg);
+  matrix.write();
 }
