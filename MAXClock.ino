@@ -67,33 +67,40 @@ void loop() {
   if (s1 >= 10){
     s1 = 0;
     s++;
+    Serial.println("seconds reset");
   }
   if (s >= 6){
     s = 0; 
     m1++;
+    Serial.println("10 seconds reset");
   }
   if (m1 >= 10){
-    m1 == 0;
+    m1 = 0;
     m++;
+    Serial.println("minutes reset");
   }
   if (m >= 6){
     m = 0;
     h1++;
+    Serial.println("10 minutes reset");
   }
-  if (h1 >= 10){
+  if ((ampm == 0 and h1 >= 10 and h < 2) or (ampm ==1 and h1 >= 10 and h < 1)){
     h1 = 0;
     h++;
+    Serial.println("hours reset");
   }
   if (ampm == 0){
     if (h >= 2 and h1 >= 4){
       h = 0;
       h1 = 0;
+    Serial.println("24 hour turn over reset");
     }
   }
   else{
-    if (h >= 1 and h1 >= 2){
+    if (h >= 1 and h1 >= 4){
       h = 0;
       h1 = 0;
+    Serial.println("12 hour turn over reset");
     }
   }
 }
